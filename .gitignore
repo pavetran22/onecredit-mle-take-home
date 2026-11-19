@@ -6,3 +6,4 @@ __pycache__/
 .pyrefly/
 .env
 .DS_Store
+scripts/distinct_texts.txt
