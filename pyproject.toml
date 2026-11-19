@@ -8,6 +8,7 @@ dependencies = [
   "fastapi>=0.165.0",
   "numpy>=2.5.5",
   "pgvector>=0.5.1",
+  "psycopg-pool>=3.3.3",
   "psycopg[binary]>=3.3.9",
   "sentence-transformers>=6.3.0",
   "uvicorn>=0.54.0",
