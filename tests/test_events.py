@@ -49,3 +49,9 @@ def test_embedding_text_fallback():
     from app.events import embedding_text
     assert embedding_text("Rubber gloves", "A", "Manufacturing") == ("Rubber gloves", "nature_of_business")
     assert embedding_text(None, "Seri Plastik", "Manufacturing") == ("Seri Plastik (Manufacturing)", "fallback_name_industry")
+
+def test_repeated_description_collapsed():
+    from app.events import clean_description
+    assert clean_description("Hotel butik di Seremban " * 60) == "Hotel butik di Seremban"
+    assert clean_description("Boutique  hotel   in Ipoh") == "Boutique hotel in Ipoh"
+    assert clean_description("in in") == "in"

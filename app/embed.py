@@ -6,7 +6,9 @@ import numpy as np
 
 DIM = 384
 # Multilingual: the feed mixes English and Malay. Runs on CPU, 384 dims.
-DEFAULT_MODEL = "intfloat/multilingual-e5-small"
+# Chosen by evals/cross_lingual.py: trained on translation pairs, so English and Malay
+# descriptions of the same business land close together (R@5 0.80 vs 0.29 for e5-small).
+DEFAULT_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 class Embedder(Protocol):
     def embed(self, text: str) -> np.ndarray: ...
@@ -16,8 +18,7 @@ class SentenceTransformerEmbedder:
         from sentence_transformers import SentenceTransformer
         self.model = SentenceTransformer(model_name, device="cpu")
     def embed(self, text: str) -> np.ndarray:
-        # e5 expects a prefix; "query: " on both sides suits symmetric similarity.
-        return self.model.encode(f"query: {text}", normalize_embeddings=True)
+        return self.model.encode(text, normalize_embeddings=True)  # no prefix needed for this model
 
 class HashEmbedder:
     """Deterministic fake for tests: same text -> same vector."""

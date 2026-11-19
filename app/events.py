@@ -59,6 +59,21 @@ def _text(value) -> str | None:
     return value.strip() if isinstance(value, str) and value.strip() else None
 
 
+def clean_description(text: str | None) -> str | None:
+    """Normalise whitespace and collapse a phrase repeated N times back to one copy.
+
+    The feed contains descriptions like "X X X ... X" (60 repeats), which distort embeddings.
+    """
+    if text is None:
+        return None
+    words = text.split()
+    n = len(words)
+    for size in range(1, n // 2 + 1):
+        if n % size == 0 and words == words[:size] * (n // size):
+            return " ".join(words[:size])
+    return " ".join(words)
+
+
 def parse_event(body: bytes | str) -> Event:
     try:
         obj = json.loads(body)
@@ -91,7 +106,7 @@ def parse_event(body: bytes | str) -> Event:
         registration_number=reg,
         updated_at=updated_at,
         company_name=name,
-        nature_of_business=_text(data.get("natureOfBusiness")),
+        nature_of_business=clean_description(_text(data.get("natureOfBusiness"))),
         state=state.title() if state else None,
         industry=_text(data.get("industry")),
     )
