@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Query
 from pgvector.psycopg import register_vector_async
 from psycopg_pool import AsyncConnectionPool
-from app.db import DATABASE_URL
+from app.db import DATABASE_URL, connect
 
 CARD = "registration_number, company_name, nature_of_business, state, industry"
 # The embedding model ranks same-language text above same-meaning text (Malay vs English).
@@ -22,6 +22,10 @@ pool = AsyncConnectionPool(DATABASE_URL, min_size=1, max_size=10, open=False, co
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Create the vector extension and schema if the consumer has not run yet,
+    # so the API also starts cleanly on a fresh database.
+    conn = await connect()
+    await conn.close()
     await pool.open()
     yield
     await pool.close()
