@@ -68,8 +68,8 @@ WHERE c.updated_at < EXCLUDED.updated_at
 """
 
 
-async def connect() -> psycopg.AsyncConnection:
-    conn = await psycopg.AsyncConnection.connect(DATABASE_URL, autocommit=True)
+async def connect(url: str = DATABASE_URL) -> psycopg.AsyncConnection:
+    conn = await psycopg.AsyncConnection.connect(url, autocommit=True)
     await conn.execute("CREATE EXTENSION IF NOT EXISTS vector")
     await register_vector_async(conn)
     await conn.execute(SCHEMA)
